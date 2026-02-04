@@ -8,24 +8,29 @@ const App = () => {
 
   // Starting position (Yes ke side me)
   const [noButtonPosition, setNoButtonPosition] = useState({
-    top: '60%',
-    left: '60%',
-  });
+    top: '0px',
+    left: '140px',   // Yes ke just right
+  });  
   
 
   // Button ko parent box ke andar random move karna
   const moveNoButton = () => {
     const btn = noBtnRef.current;
     if (!btn) return;
-  
+
+    const parent = btn.parentElement;
+    if (!parent) return;
+
     const btnWidth = btn.offsetWidth;
     const btnHeight = btn.offsetHeight;
-  
-    const maxX = window.innerWidth - btnWidth - 10;
-    const maxY = window.innerHeight - btnHeight - 10;
-  
-    const randomX = Math.floor(Math.random() * maxX);
-    const randomY = Math.floor(Math.random() * maxY);
+    const parentRect = parent.getBoundingClientRect();
+
+    // "No" button ko parent ke andar hi rakhna (pink background / display ke andar)
+    const maxX = Math.max(parentRect.width - btnWidth, 300);
+    const maxY = Math.max(parentRect.height - btnHeight, 300);
+
+    const randomX = Math.floor(Math.random() * (maxX + 1));
+    const randomY = Math.floor(Math.random() * (maxY + 1));
   
     setNoButtonPosition({
       left: `${randomX}px`,
@@ -42,7 +47,7 @@ const App = () => {
           <img src={valentine} style={styles.gif} />
 
           <h1 style={styles.text}>
-            Prachi, will you be my Valentine?
+            Srishti, will you be my Valentine?
           </h1>
 
           <div style={styles.buttonGroup}>
@@ -57,7 +62,6 @@ const App = () => {
             ref={noBtnRef}
             style={{
               ...styles.noButton,
-              position: 'fixed',
               left: noButtonPosition.left,
               top: noButtonPosition.top,
             }}
@@ -107,13 +111,16 @@ const styles = {
   },
   buttonGroup: {
     marginTop: '20px',
-    position: 'relative',   // ⭐ important
+    position: 'relative',
     height: '60px',
+    width: '260px',     // ⭐ add this
+    marginInline: 'auto',
   },
+  
   yesButton: {
+    marginLeft: '-100px',
     backgroundColor: '#ff4081',
     color: 'white',
-    marginRight: '30%',
     border: 'none',
     padding: '10px 30px',
     fontSize: '1.2rem',
@@ -124,14 +131,12 @@ const styles = {
     backgroundColor: '#757575',
     color: 'white',
     border: 'none',
-    marginLeft: '-10%',
-    marginTop : '-1%',
     padding: '10px 30px',
     fontSize: '1.2rem',
     borderRadius: '10px',
     position: 'absolute',
     transition: 'all 0.2s ease',
-  },
+  },  
   footerText: {
     marginTop: '20px',
     fontStyle: 'italic',
