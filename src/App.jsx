@@ -1,52 +1,82 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import valentine from './assets/valentines-day.png';
 import success from './assets/Hugging Hug GIF.gif';
 
 const App = () => {
   const [isAccepted, setIsAccepted] = useState(false);
-  const [noButtonPosition, setNoButtonPosition] = useState({ top: '50%', left: '60%' });
+  const noBtnRef = useRef(null);
 
-  // Function to move the "No" button to a random position
+  // Starting position (Yes ke side me)
+  const [noButtonPosition, setNoButtonPosition] = useState({
+    top: '60%',
+    left: '60%',
+  });
+  
+
+  // Button ko parent box ke andar random move karna
   const moveNoButton = () => {
-    const randomX = Math.floor(Math.random() * 80) + 10; // keep within 10-90% of screen
-    const randomY = Math.floor(Math.random() * 80) + 10;
-    setNoButtonPosition({ top: `${randomY}%`, left: `${randomX}%` });
+    const btn = noBtnRef.current;
+    if (!btn) return;
+  
+    const btnWidth = btn.offsetWidth;
+    const btnHeight = btn.offsetHeight;
+  
+    const maxX = window.innerWidth - btnWidth - 10;
+    const maxY = window.innerHeight - btnHeight - 10;
+  
+    const randomX = Math.floor(Math.random() * maxX);
+    const randomY = Math.floor(Math.random() * maxY);
+  
+    setNoButtonPosition({
+      left: `${randomX}px`,
+      top: `${randomY}px`,
+    });
   };
+  
+  
 
   return (
     <div style={styles.container}>
       {!isAccepted ? (
         <div style={styles.card}>
-          <img 
-            src=
-            // "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3dsYmw4anp2Y2Z5NmF1NjZzN3UxZ2ZjODZ1YXFvazl2Y29qdnlwdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gjHkRHSuHqu99y9Yjt/giphy.gif"
-            {valentine}
-            style={styles.gif}
-          />
-          <h1 style={styles.text}>Prachi, will you be my Valentine?</h1>
+          <img src={valentine} style={styles.gif} />
+
+          <h1 style={styles.text}>
+            Prachi, will you be my Valentine?
+          </h1>
+
           <div style={styles.buttonGroup}>
-            <button 
-              style={styles.yesButton} 
+            <button
+              style={styles.yesButton}
               onClick={() => setIsAccepted(true)}
             >
               Yes
             </button>
-            <button 
-              style={{ ...styles.noButton, position: 'absolute', top: noButtonPosition.top, left: noButtonPosition.left }}
-              onMouseEnter={moveNoButton}
-            >
-              No
-            </button>
+
+          <button
+            ref={noBtnRef}
+            style={{
+              ...styles.noButton,
+              position: 'fixed',
+              left: noButtonPosition.left,
+              top: noButtonPosition.top,
+            }}
+            onMouseEnter={moveNoButton}
+            onClick={moveNoButton}
+          >
+            No
+          </button>
+
           </div>
-          <p style={styles.footerText}>"No" seems a bit shy...🫣</p>
+
+          <p style={styles.footerText}>
+            "No" seems a bit shy...🫣
+          </p>
         </div>
       ) : (
         <div style={styles.card}>
           <h1 style={styles.text}>YAY! 🎉</h1>
-          <img 
-            src={success} 
-            style={styles.gif}
-          />
+          <img src={success} style={styles.gif} />
           <p style={styles.text}>See you then!</p>
         </div>
       )}
@@ -60,13 +90,12 @@ const styles = {
     width: '100vw',
     display: 'flex',
     justifyContent: 'center',
-    alignSelf: 'center',
+    alignItems: 'center',
     backgroundColor: '#fce4ec',
     fontFamily: '"Comic Sans MS", cursive, sans-serif',
   },
   card: {
     textAlign: 'center',
-    marginTop: '100px',
   },
   gif: {
     width: '200px',
@@ -78,31 +107,36 @@ const styles = {
   },
   buttonGroup: {
     marginTop: '20px',
+    position: 'relative',   // ⭐ important
+    height: '60px',
   },
   yesButton: {
     backgroundColor: '#ff4081',
     color: 'white',
+    marginRight: '30%',
     border: 'none',
     padding: '10px 30px',
     fontSize: '1.2rem',
     borderRadius: '10px',
     cursor: 'pointer',
-    marginRight: '20px',
   },
   noButton: {
     backgroundColor: '#757575',
     color: 'white',
     border: 'none',
+    marginLeft: '-10%',
+    marginTop : '-1%',
     padding: '10px 30px',
     fontSize: '1.2rem',
     borderRadius: '10px',
+    position: 'absolute',
     transition: 'all 0.2s ease',
   },
   footerText: {
     marginTop: '20px',
     fontStyle: 'italic',
     color: '#888',
-  }
+  },
 };
 
 export default App;
